@@ -4,12 +4,14 @@ import LocationField from "./components/LocationField";
 import CityDateDisplay from "./components/CityDateDisplay.jsx";
 import WeatherCityDisplay from "./components/WeatherCityDisplay";
 import FiveDayForecast from "./components/FiveDayForecast";
+import "./App.css";
 
 function App() {
   const API = "99a4a0694e26cfd293bc91027da9845d";
   const [currentData, setCurrentData] = useState({});
   const [forecastData, setForecastData] = useState([]);
   const [location, setLocation] = useState("");
+  const [background, setBackground] = useState("");
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -55,9 +57,35 @@ function App() {
     }
   }, [location]);
 
+  useEffect(() => {
+    if (currentData.weather) {
+      const weather = currentData.weather[0].main.toLowerCase();
+      let newBackground = "";
+
+      switch (weather) {
+        case "clear":
+          newBackground = "url('https://source.unsplash.com/800x600/?sunny-beach')";
+          break;
+        case "clouds":
+          newBackground = "url('https://source.unsplash.com/800x600/?cloudy')";
+          break;
+        case "rain":
+          newBackground = "url('https://source.unsplash.com/800x600/?rain')";
+          break;
+        case "snow":
+          newBackground = "url('https://source.unsplash.com/800x600/?snow')";
+          break;
+        default:
+          newBackground = "url('https://source.unsplash.com/800x600/?weather')";
+          break;
+      }
+
+      setBackground(newBackground);
+    }
+  }, [currentData]);
+
   return (
-    <div className="app">
-      {console.log("all", currentData)}
+    <div className="app" style={{ backgroundImage: background, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <CityDateDisplay data={currentData} />
       <WeatherCityDisplay data={currentData} />
       <FiveDayForecast forecast={forecastData} />
